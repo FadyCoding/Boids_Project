@@ -14,9 +14,9 @@
 class Boid 
 {
 	private:
-		glm::vec2 position;
-        glm::vec2 velocity;
-        int             id;
+		glm::vec2 _position;
+        glm::vec2 _velocity;
+        int             _id;
 
 
 
@@ -24,12 +24,12 @@ class Boid
 
         //Default construcor
         Boid()
-            : position(glm::vec2(0.0f)), velocity(glm::vec2(0.0f)),id(int(0)){};
+            : _position(glm::vec2(0.0f)), _velocity(glm::vec2(0.0f)),_id(int(0)){};
         
 
         // Constructor
         Boid(glm::vec2 pos, glm::vec2 vel, int boidID)
-            : position(pos), velocity(vel), id(boidID){};
+            : _position(pos), _velocity(vel), _id(boidID){};
             
 
         // Destructor

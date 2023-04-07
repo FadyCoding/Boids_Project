@@ -32,9 +32,11 @@ int main(int argc, char* argv[])
     glm::vec2 vel1(4.0f, 0.0f);
     boid_test.set_velocity(vel1);
 
-    // Random coordinates
+    // Position
     glm::vec2 pos_min(-2.0f, -1.0f);
     glm::vec2 pos_max(2.0f, 1.0f);
+
+    // Velocity
     glm::vec2 vel_min(-2.0f, -2.0f);
     glm::vec2 vel_max(2.0f, 2.0f);
 
@@ -50,16 +52,14 @@ int main(int argc, char* argv[])
     for (int i = 0; i < num_boids; i++)
     {   
         BoidID = i;
-        boid.set_position(p6::random::point(pos_min, pos_max));
-        boid.set_velocity(p6::random::point(vel_min, vel_max)); 
-        boid.set_ID(BoidID);
+        boid.set_position(p6::random::point(pos_min, pos_max)); //sets a random position to each boid between a minimum and maximum
+        boid.set_velocity(p6::random::point(vel_min, vel_max)); //sets a random velocity to each boid between a minimum and maximum
+        boid.set_ID(BoidID);    // sets each boid's id 
         boids.push_back(boid); // add the boid to the vector
     }
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-
-        
 
         ctx.background(p6::NamedColor::BallBlue);
         ctx.stroke_weight = 0.005f;
@@ -67,31 +67,19 @@ int main(int argc, char* argv[])
         ctx.use_fill      = true;
 
         //boid_test.draw_Boid(ctx);
-       // glm::to_string(pos1);
+        //glm::to_string(pos1);
         //boid_test.update_Boid_position(0.01f);
-       // glm::to_string(pos1);
+       //glm::to_string(pos1);
 
         //no modification of boids and less costly to copy
         for (auto& boid : boids)
         {
             boid.draw_Boid(ctx);
             boid.update_Boid_position(0.001f);
-           // boid.separation(boids, 2.0f, num_boids);
+            boid.separation(boids, 0.5f, num_boids);
         }
-
-        
-
-
     };
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
 }
-
-
-/*
-    ctx.circle(
-    p6::Center{ctx.mouse()},
-    p6::Radius{0.05f}
-);
-*/
