@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     // Sets position staticaly
     glm::vec2 pos1(-1.8f, 0.0f);
     boid_test.set_position(pos1);
-    glm::vec2 vel1(1.0f, 1.0f);
+    glm::vec2 vel1(4.0f, 0.0f);
     boid_test.set_velocity(vel1);
 
     // Random coordinates
@@ -38,15 +38,21 @@ int main(int argc, char* argv[])
     glm::vec2 vel_min(-2.0f, -2.0f);
     glm::vec2 vel_max(2.0f, 2.0f);
 
+    //std::cout << "okokok" << std::endl;
 
+    //Initialize boid vector
+    const int num_boids = 15;
 
-    //Initiate boid vector
-    const int num_boids = 5;
+    //Initialize boid's ID
+    int BoidID;
+
     std::vector<Boid> boids;
     for (int i = 0; i < num_boids; i++)
     {   
+        BoidID = i;
         boid.set_position(p6::random::point(pos_min, pos_max));
         boid.set_velocity(p6::random::point(vel_min, vel_max)); 
+        boid.set_ID(BoidID);
         boids.push_back(boid); // add the boid to the vector
     }
 
@@ -60,16 +66,17 @@ int main(int argc, char* argv[])
         ctx.use_stroke    = false;
         ctx.use_fill      = true;
 
-        boid_test.draw_Boid(ctx);
+        //boid_test.draw_Boid(ctx);
        // glm::to_string(pos1);
-        boid_test.update_Boid_position(0.0001f);
+        //boid_test.update_Boid_position(0.01f);
        // glm::to_string(pos1);
 
         //no modification of boids and less costly to copy
         for (auto& boid : boids)
         {
             boid.draw_Boid(ctx);
-            boid.update_Boid_position(0.01f);
+            boid.update_Boid_position(0.001f);
+           // boid.separation(boids, 2.0f, num_boids);
         }
 
         
