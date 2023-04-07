@@ -43,10 +43,10 @@ int main(int argc, char* argv[])
     //std::cout << "okokok" << std::endl;
 
     //Initialize boid vector
-    const int num_boids = 15;
+    const int num_boids = 30;
 
     //Initialize boid's ID
-    int BoidID;
+    int BoidID = 0;
 
     std::vector<Boid> boids;
     for (int i = 0; i < num_boids; i++)
@@ -75,8 +75,8 @@ int main(int argc, char* argv[])
         for (auto& boid : boids)
         {
             boid.draw_Boid(ctx);
-            boid.update_Boid_position(0.001f);
-            boid.separation(boids, 0.5f, num_boids);
+            boid.update_Boid_position(0.002f);
+            boid.separation(boids, 1.0f, num_boids);
         }
     };
 

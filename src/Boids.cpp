@@ -91,7 +91,6 @@ void Boid::update_Boid_position(float dTime)
 void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const int num_boids)
 {
     
-    //std::cout << boids_list[10].get_id() << std::endl;
     std::cout << this->_id << std::endl;
 
     for (size_t i = 0; i < num_boids; i++)
@@ -108,9 +107,6 @@ void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const 
             }
             if (dist_euclid < protected_dist)
             {
-                //Sleep(100);
-                //this->set_velocity(- boids_list[i].get_velocity());
-                //boids_list[i].set_velocity(- this->get_velocity());
 
                 //Calculate separation vector 
                 glm::vec2 separation = this->_position - boids_list[i].get_position();
@@ -120,6 +116,27 @@ void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const 
 
                 // Scale separation vector based on distance and apply to velocity
                 this->_velocity += separation * (protected_dist - dist_euclid) / protected_dist;
+
+            }
+
+        }
+
+    }
+}
+
+void Boid::alignment(std::vector<Boid> boids_list, float protected_dist, const int num_boids, float matchingfactor)
+{
+    //each boid tries to match the velocity of other boids inside its visible range
+    for (size_t i = 0; i < num_boids; i++)
+    {
+        if (this->_id != boids_list[i].getID())
+        {
+            float dist_euclid = std::sqrt(std::pow(this->_position.x - boids_list[i].get_position().x, 2) + std::pow(this->_position.y - boids_list[i].get_position().y, 2));
+
+            if (dist_euclid < protected_dist)
+            {
+                this->_velocity += boids_list[i]._velocity;
+
             }
 
         }
