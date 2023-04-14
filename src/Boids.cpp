@@ -91,7 +91,7 @@ void Boid::update_Boid_position(float dTime)
 void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const int num_boids)
 {
     
-    std::cout << this->_id << std::endl;
+    //std::cout << this->_id << std::endl;
 
     for (size_t i = 0; i < num_boids; i++)
     {
@@ -99,12 +99,14 @@ void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const 
         //if (this != &boids_list[i])
         if (this->_id != boids_list[i].getID())
         {
-
+            // Calculates the position between this and boid who is neighbor
             float dist_euclid = std::sqrt(std::pow(this->_position.x - boids_list[i].get_position().x, 2) + std::pow(this->_position.y - boids_list[i].get_position().y, 2));
+            /*
             if (this->_id == 0)
             {
                 std::cout << dist_euclid << std::endl;
             }
+            */ 
             if (dist_euclid < protected_dist)
             {
 
@@ -124,22 +126,52 @@ void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const 
     }
 }
 
-void Boid::alignment(std::vector<Boid> boids_list, float protected_dist, const int num_boids, float matchingfactor)
+void Boid::alignment(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float modifier)
 {
-    //each boid tries to match the velocity of other boids inside its visible range
+    //Initialization of average speed variables
+    float _xvel_avg, _yvel_avg;
+    _xvel_avg = 0.0;
+    _yvel_avg = 0.0;
+
     for (size_t i = 0; i < num_boids; i++)
     {
-        if (this->_id != boids_list[i].getID())
+        //std::cout << this->_id << std::endl;
+
+        if (this->_id != neighbors_list[i].getID())
         {
-            float dist_euclid = std::sqrt(std::pow(this->_position.x - boids_list[i].get_position().x, 2) + std::pow(this->_position.y - boids_list[i].get_position().y, 2));
+            //std::cout << this->_id << std::endl;
+
+
+            //Calculates the position between this and boid who is neighbor
+            float dist_euclid = std::sqrt(std::pow(this->_position.x - neighbors_list[i].get_position().x, 2) + std::pow(this->_position.y - neighbors_list[i].get_position().y, 2));
 
             if (dist_euclid < protected_dist)
             {
-                this->_velocity += boids_list[i]._velocity;
+
+                //We match the neighbor velocity to its neighbor
+                _xvel_avg  += neighbors_list[i]._velocity.x;
+                _yvel_avg += neighbors_list[i]._velocity.y;
+                //std::cout << _yvel_avg << std::endl;
+                std::cout << neighbors_list[i]._velocity.x << std::endl;
 
             }
 
-        }
+            //std::cout << neighbors_list.size() << std::endl;
+            
+            if (neighbors_list.size() > 0)
+            {
+                //std::cout << neighbors_list.size() << std::endl;
+                //Match the velocity to the average of the boid group
+                _xvel_avg = this->_velocity.x / neighbors_list.size();
+                _yvel_avg = this->_velocity.y / neighbors_list.size();
 
+            }
+
+
+            this->_velocity.x += (_xvel_avg - this->_velocity.x)*modifier;
+            this->_velocity.y += (_yvel_avg - this->_velocity.y)*modifier;
+            
+        }
     }
 }
+

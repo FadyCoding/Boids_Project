@@ -37,13 +37,13 @@ int main(int argc, char* argv[])
     glm::vec2 pos_max(2.0f, 1.0f);
 
     // Velocity
-    glm::vec2 vel_min(-2.0f, -2.0f);
-    glm::vec2 vel_max(2.0f, 2.0f);
+    glm::vec2 vel_min(-20.0f, -20.0f);
+    glm::vec2 vel_max(20.0f, 20.0f);
 
     //std::cout << "okokok" << std::endl;
 
     //Initialize boid vector
-    const int num_boids = 30;
+    const int num_boids = 15;
 
     //Initialize boid's ID
     int BoidID = 0;
@@ -76,7 +76,8 @@ int main(int argc, char* argv[])
         {
             boid.draw_Boid(ctx);
             boid.update_Boid_position(0.002f);
-            boid.separation(boids, 1.0f, num_boids);
+            //boid.separation(boids, 0.3f, num_boids);
+            boid.alignment(boids, 0.8f, num_boids, 1.0);
         }
     };
 
