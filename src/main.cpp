@@ -48,6 +48,9 @@ int main(int argc, char* argv[])
     //Initialize boid's ID
     int BoidID = 0;
 
+    //Protected distance 
+    float protected_dist = 0.3f;
+
     std::vector<Boid> boids;
     for (int i = 0; i < num_boids; i++)
     {   
@@ -69,15 +72,16 @@ int main(int argc, char* argv[])
         //boid_test.draw_Boid(ctx);
         //glm::to_string(pos1);
         //boid_test.update_Boid_position(0.01f);
-       //glm::to_string(pos1);
+        //glm::to_string(pos1);
 
         //no modification of boids and less costly to copy
         for (auto& boid : boids)
         {
             boid.draw_Boid(ctx);
-            boid.update_Boid_position(0.002f);
-            //boid.separation(boids, 0.3f, num_boids);
-            boid.alignment(boids, 0.8f, num_boids, 1.0);
+            boid.update_Boid_position(0.0001f);
+            boid.separation(boids, protected_dist, num_boids);
+            boid.alignment(boids, protected_dist, num_boids, 0.2);
+            boid.cohesion(boids, protected_dist, num_boids, 1.0);
         }
     };
 

@@ -53,7 +53,7 @@ class Boid
         void update_Boid_position(float dTime);
         void separation(std::vector<Boid> boids_list, float protected_dist, const int num_boids);
         void alignment(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float modifier);
-
+        void cohesion(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float centering);
 };
 
 

@@ -19,7 +19,8 @@ glm::vec2 Boid::get_velocity()
 
 void Boid::set_position(glm::vec2 pos)
 {
-    if (pos.x < -2.0f)
+    
+        if (pos.x < -2.0f)
     {
         
         this->_position.x = 2.0f - std::abs(pos.x + 2.0f);
@@ -51,8 +52,9 @@ void Boid::set_position(glm::vec2 pos)
             this->_position.y = pos.y;
         }
     }
-
     
+
+   // this->_position = pos;
 }
 
 void Boid::set_velocity(glm::vec2 vel)
@@ -82,10 +84,7 @@ void Boid::draw_Boid(p6::Context& ctx)
 
 void Boid::update_Boid_position(float dTime)
 {
-    set_position(this->_position + this->_velocity * dTime);
-    //this->position += this->velocity * dTime; //cette merde
-   
-  
+    set_position(this->_position + this->_velocity * dTime);   
 }
 
 void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const int num_boids)
@@ -149,29 +148,70 @@ void Boid::alignment(std::vector<Boid> neighbors_list, float protected_dist, con
             {
 
                 //We match the neighbor velocity to its neighbor
-                _xvel_avg  += neighbors_list[i]._velocity.x;
-                _yvel_avg += neighbors_list[i]._velocity.y;
+                
+                _xvel_avg += neighbors_list[i].get_velocity().x;
+                _yvel_avg += neighbors_list[i].get_velocity().y;
                 //std::cout << _yvel_avg << std::endl;
-                std::cout << neighbors_list[i]._velocity.x << std::endl;
+                //std::cout << neighbors_list[i].get_velocity().x << std::endl;
 
             }
 
             //std::cout << neighbors_list.size() << std::endl;
             
-            if (neighbors_list.size() > 0)
-            {
-                //std::cout << neighbors_list.size() << std::endl;
-                //Match the velocity to the average of the boid group
-                _xvel_avg = this->_velocity.x / neighbors_list.size();
-                _yvel_avg = this->_velocity.y / neighbors_list.size();
 
-            }
-
-
-            this->_velocity.x += (_xvel_avg - this->_velocity.x)*modifier;
-            this->_velocity.y += (_yvel_avg - this->_velocity.y)*modifier;
             
         }
     }
+    std::cout << _xvel_avg << std::endl;
+    std::cout << _yvel_avg << std::endl;
+
+    if (neighbors_list.size() > 0)
+    {
+        // std::cout << neighbors_list.size() << std::endl;
+        // Match the velocity to the average of the boid group
+        _xvel_avg = _xvel_avg / neighbors_list.size();
+        _yvel_avg = _yvel_avg / neighbors_list.size();
+
+    }
+    glm::vec2 temp(this->_velocity.x + std::abs(_xvel_avg - this->_velocity.x) * modifier, this->_velocity.y + std::abs(_yvel_avg - this->_velocity.y) * modifier);
+
+    this->set_velocity(temp);
+    //this->_velocity.x += std::abs(_xvel_avg - this->_velocity.x) * modifier;
+    //this->_velocity.y += std::abs(_yvel_avg - this->_velocity.y) * modifier;
+
+
 }
 
+void Boid::cohesion(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float centering)
+{
+    float xpos_avg, ypos_avg;
+    xpos_avg = 0.0;
+    ypos_avg = 0.0;
+
+    for (size_t i = 0; i < num_boids; i++)
+    {
+        if (this->_id != neighbors_list[i].getID())
+        {
+            // Calculates the position between this and boid who is neighbor
+            float     dist_euclid = std::sqrt(std::pow(this->_position.x - neighbors_list[i].get_position().x, 2) + std::pow(this->_position.y - neighbors_list[i].get_position().y, 2));
+
+            if (dist_euclid < protected_dist)
+            {
+                glm::vec2 pos_avg(xpos_avg + neighbors_list[i]._position.x, ypos_avg + neighbors_list[i]._position.y);
+                set_position(pos_avg);
+            }
+
+        }
+    }
+
+    if (neighbors_list.size() > 0)
+    {
+        xpos_avg = xpos_avg / neighbors_list.size();
+        ypos_avg = ypos_avg / neighbors_list.size();
+
+    }
+
+    glm::vec2 temp(this->_velocity.x + (xpos_avg - this->_velocity.x) * centering, this->_velocity.y + (xpos_avg - this->_velocity.y) * centering);
+    this->set_velocity(temp);
+
+}
