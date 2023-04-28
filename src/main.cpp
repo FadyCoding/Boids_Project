@@ -43,13 +43,13 @@ int main(int argc, char* argv[])
     //std::cout << "okokok" << std::endl;
 
     //Initialize boid vector
-    const int num_boids = 15;
+    const int num_boids = 50;
 
     //Initialize boid's ID
     int BoidID = 0;
 
     //Protected distance 
-    float protected_dist = 0.3f;
+    float protected_dist = 0.2f;
 
     std::vector<Boid> boids;
     for (int i = 0; i < num_boids; i++)
@@ -80,8 +80,8 @@ int main(int argc, char* argv[])
             boid.draw_Boid(ctx);
             boid.update_Boid_position(0.0001f);
             boid.separation(boids, protected_dist, num_boids);
-            boid.alignment(boids, protected_dist, num_boids, 0.2);
-            boid.cohesion(boids, protected_dist, num_boids, 1.0);
+            boid.alignment(boids, protected_dist, num_boids, 0.1, 50.0f);
+            //boid.cohesion(boids, protected_dist, num_boids, 1.0);
         }
     };
 

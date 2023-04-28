@@ -19,8 +19,8 @@ glm::vec2 Boid::get_velocity()
 
 void Boid::set_position(glm::vec2 pos)
 {
-    
-        if (pos.x < -2.0f)
+ 
+    if (pos.x < -2.0f)
     {
         
         this->_position.x = 2.0f - std::abs(pos.x + 2.0f);
@@ -54,7 +54,7 @@ void Boid::set_position(glm::vec2 pos)
     }
     
 
-   // this->_position = pos;
+   //this->_position = pos;
 }
 
 void Boid::set_velocity(glm::vec2 vel)
@@ -125,12 +125,19 @@ void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const 
     }
 }
 
-void Boid::alignment(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float modifier)
+void Boid::alignment(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float modifier, float max_speed)
 {
     //Initialization of average speed variables
     float _xvel_avg, _yvel_avg;
     _xvel_avg = 0.0;
     _yvel_avg = 0.0;
+
+    //counter
+    int neighbors_count = 0;
+    
+
+    std::cout << this->get_velocity().x << std::endl;
+
 
     for (size_t i = 0; i < num_boids; i++)
     {
@@ -151,34 +158,33 @@ void Boid::alignment(std::vector<Boid> neighbors_list, float protected_dist, con
                 
                 _xvel_avg += neighbors_list[i].get_velocity().x;
                 _yvel_avg += neighbors_list[i].get_velocity().y;
-                //std::cout << _yvel_avg << std::endl;
-                //std::cout << neighbors_list[i].get_velocity().x << std::endl;
+                neighbors_count += 1;
 
             }
-
-            //std::cout << neighbors_list.size() << std::endl;
-            
-
             
         }
     }
-    std::cout << _xvel_avg << std::endl;
-    std::cout << _yvel_avg << std::endl;
+    //std::cout << neighbors_count << std::endl;
+    //std::cout << _xvel_avg << std::endl;
+    //std::cout << _yvel_avg << std::endl;
 
-    if (neighbors_list.size() > 0)
+    if (neighbors_count > 0)
     {
-        // std::cout << neighbors_list.size() << std::endl;
         // Match the velocity to the average of the boid group
-        _xvel_avg = _xvel_avg / neighbors_list.size();
-        _yvel_avg = _yvel_avg / neighbors_list.size();
+        _xvel_avg = _xvel_avg / neighbors_count;
+        _yvel_avg = _yvel_avg / neighbors_count;
 
     }
+
     glm::vec2 temp(this->_velocity.x + std::abs(_xvel_avg - this->_velocity.x) * modifier, this->_velocity.y + std::abs(_yvel_avg - this->_velocity.y) * modifier);
 
-    this->set_velocity(temp);
-    //this->_velocity.x += std::abs(_xvel_avg - this->_velocity.x) * modifier;
-    //this->_velocity.y += std::abs(_yvel_avg - this->_velocity.y) * modifier;
 
+    if (glm::length(temp) > max_speed)
+    {
+        temp = glm::normalize(temp) * max_speed;
+    }
+
+    this->set_velocity(temp);
 
 }
 
