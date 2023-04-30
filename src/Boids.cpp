@@ -1,7 +1,7 @@
 #include"Boids.hpp"
 
-//size_t Boid::next_id = 0; initialize the static variable to 0
 
+//Getters
 glm::vec2 Boid::get_position()
 {
     return this->_position;
@@ -12,10 +12,12 @@ glm::vec2 Boid::get_velocity()
     return this->_velocity;
 }
 
-    std::size_t Boid::getID()
+std::size_t Boid::getID()
 {
     return this->_id;
 }
+
+//Setters
 
 void Boid::set_position(glm::vec2 pos)
 {
@@ -62,12 +64,12 @@ void Boid::set_velocity(glm::vec2 vel)
     this->_velocity = vel;
 }
 
-void Boid::set_ID(int boidID)
+void Boid::set_ID(const int boidID)
 {
     this->_id = boidID;
 }
 
-
+//Drawing
 void Boid::draw_Boid(p6::Context& ctx)
 {
 
@@ -77,40 +79,33 @@ void Boid::draw_Boid(p6::Context& ctx)
 
     ctx.equilateral_triangle(
         p6::Center{this->_position.x, this->_position.y},
-        p6::Radius{0.05f}
+        p6::Radius{0.03f}
     );
 
 }
 
-void Boid::update_Boid_position(float dTime)
+//Update methods
+void Boid::update_Boid_position(const float dTime)
 {
     set_position(this->_position + this->_velocity * dTime);   
 }
 
-void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const int num_boids)
+void Boid::separation(std::vector<Boid>& boids_list, const float protected_dist)
 {
-    
-    //std::cout << this->_id << std::endl;
-
-    for (size_t i = 0; i < num_boids; i++)
+    // no modification of boids and less costly to copy
+    for (const auto&boid : boids_list)
     {
-
         //if (this != &boids_list[i])
-        if (this->_id != boids_list[i].getID())
+        if (this->_id != boid._id)
         {
             // Calculates the position between this and boid who is neighbor
-            float dist_euclid = std::sqrt(std::pow(this->_position.x - boids_list[i].get_position().x, 2) + std::pow(this->_position.y - boids_list[i].get_position().y, 2));
-            /*
-            if (this->_id == 0)
-            {
-                std::cout << dist_euclid << std::endl;
-            }
-            */ 
+            float dist_euclid = std::sqrt(std::pow(this->_position.x - boid._position.x, 2) + std::pow(this->_position.y - boid._position.y, 2));
+
             if (dist_euclid < protected_dist)
             {
 
                 //Calculate separation vector 
-                glm::vec2 separation = this->_position - boids_list[i].get_position();
+                glm::vec2 separation = this->_position - boid._position;
 
                 //Normalize the previous vector
                 separation = separation / dist_euclid;
@@ -125,54 +120,53 @@ void Boid::separation(std::vector<Boid> boids_list, float protected_dist, const 
     }
 }
 
-void Boid::alignment(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float modifier, float max_speed)
+void Boid::alignment(std::vector<Boid>& neighbors_list, const float protected_dist, float modifier, const float max_speed)
 {
     //Initialization of average speed variables
     float _xvel_avg, _yvel_avg;
     _xvel_avg = 0.0;
     _yvel_avg = 0.0;
 
-    //counter
+    // counter for neighbors in protected distance
     int neighbors_count = 0;
     
-
-    std::cout << this->get_velocity().x << std::endl;
-
-
-    for (size_t i = 0; i < num_boids; i++)
+    // no modification of boids and less costly to copy
+    for (const auto& neighbor : neighbors_list)
     {
         //std::cout << this->_id << std::endl;
 
-        if (this->_id != neighbors_list[i].getID())
+        if (this->_id != neighbor._id)
         {
             //std::cout << this->_id << std::endl;
 
 
             //Calculates the position between this and boid who is neighbor
-            float dist_euclid = std::sqrt(std::pow(this->_position.x - neighbors_list[i].get_position().x, 2) + std::pow(this->_position.y - neighbors_list[i].get_position().y, 2));
+            float dist_euclid = std::sqrt(std::pow(this->_position.x - neighbor._position.x, 2) + std::pow(this->_position.y - neighbor._position.y, 2));
 
             if (dist_euclid < protected_dist)
             {
-
                 //We match the neighbor velocity to its neighbor
                 
-                _xvel_avg += neighbors_list[i].get_velocity().x;
-                _yvel_avg += neighbors_list[i].get_velocity().y;
+                _xvel_avg += neighbor._velocity.x;
+                _yvel_avg += neighbor._velocity.y;
                 neighbors_count += 1;
 
             }
             
         }
     }
+    //Debug test
+    
     //std::cout << neighbors_count << std::endl;
     //std::cout << _xvel_avg << std::endl;
     //std::cout << _yvel_avg << std::endl;
 
     if (neighbors_count > 0)
-    {
+    { 
+
         // Match the velocity to the average of the boid group
-        _xvel_avg = _xvel_avg / neighbors_count;
-        _yvel_avg = _yvel_avg / neighbors_count;
+        _xvel_avg = _xvel_avg / static_cast<float>(neighbors_count);
+        _yvel_avg = _yvel_avg / static_cast<float>(neighbors_count);
 
     }
 
@@ -188,36 +182,29 @@ void Boid::alignment(std::vector<Boid> neighbors_list, float protected_dist, con
 
 }
 
-void Boid::cohesion(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float centering)
+
+void Boid::cohesion(const std::vector<Boid>& neighbors_list, const float protected_dist, const float centering)
 {
-    float xpos_avg, ypos_avg;
-    xpos_avg = 0.0;
-    ypos_avg = 0.0;
+    glm::vec2 center_of_mass(0.0f, 0.0f);
+    int       neighbors_count = 0;
 
-    for (size_t i = 0; i < num_boids; i++)
+    // no modification of boids and less costly to copy
+    for (const auto& neighbor : neighbors_list)
     {
-        if (this->_id != neighbors_list[i].getID())
+        const float distance = glm::distance(this->_position, neighbor._position);
+        if (distance > 0.0f && distance < protected_dist)
         {
-            // Calculates the position between this and boid who is neighbor
-            float     dist_euclid = std::sqrt(std::pow(this->_position.x - neighbors_list[i].get_position().x, 2) + std::pow(this->_position.y - neighbors_list[i].get_position().y, 2));
-
-            if (dist_euclid < protected_dist)
-            {
-                glm::vec2 pos_avg(xpos_avg + neighbors_list[i]._position.x, ypos_avg + neighbors_list[i]._position.y);
-                set_position(pos_avg);
-            }
-
+            center_of_mass += neighbor._position;
+            neighbors_count++;
         }
     }
 
-    if (neighbors_list.size() > 0)
+    if (neighbors_count > 0)
     {
-        xpos_avg = xpos_avg / neighbors_list.size();
-        ypos_avg = ypos_avg / neighbors_list.size();
-
+        center_of_mass /= static_cast<float>(neighbors_count);
+        glm::vec2 cohesion_vector = (center_of_mass - this->_position) * centering;
+        this->set_velocity(this->_velocity + cohesion_vector);
     }
-
-    glm::vec2 temp(this->_velocity.x + (xpos_avg - this->_velocity.x) * centering, this->_velocity.y + (xpos_avg - this->_velocity.y) * centering);
-    this->set_velocity(temp);
-
 }
+
+

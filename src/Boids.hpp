@@ -44,16 +44,17 @@ class Boid
         //setters
         void set_position(glm::vec2 pos);
         void set_velocity(glm::vec2 vel);
-        void set_ID(int boidID);
+        void set_ID(const int boidID);
 
         //draw method
         void draw_Boid(p6::Context& ctx);
 
         //update method
-        void update_Boid_position(float dTime);
-        void separation(std::vector<Boid> boids_list, float protected_dist, const int num_boids);
-        void alignment(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float modifier, float max_speed);
-        void cohesion(std::vector<Boid> neighbors_list, float protected_dist, const int num_boids, float centering);
+        void update_Boid_position(const float dTime);
+        // Pass the boid and neighbors list with a reference so we don't copy everytime the list
+        void separation(std::vector<Boid>& boids_list, const float protected_dist); 
+        void alignment(std::vector<Boid>& neighbors_list, const float protected_dist, const float modifier, const float max_speed); 
+        void cohesion(const std::vector<Boid>& neighbors_list, const float protected_dist, const float centering);
 };
 
 
