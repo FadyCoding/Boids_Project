@@ -51,14 +51,18 @@ int main(int argc, char* argv[])
     //Protected distance 
     float protected_dist = 0.1f;
 
+    //ptr function var
+    //distance_func_ptr distance_func  = &euclidian_dist;
+
+
     std::vector<Boid> boids;
     for (int i = 0; i < num_boids; i++)
     {   
         BoidID = i;
         boid.set_position(p6::random::point(pos_min, pos_max)); //sets a random position to each boid between a minimum and maximum
         boid.set_velocity(p6::random::point(vel_min, vel_max)); //sets a random velocity to each boid between a minimum and maximum
-        boid.set_ID(BoidID);    // sets each boid's id 
-        boids.push_back(boid); // add the boid to the vector
+        boid.set_ID(BoidID);                                    // sets each boid's id 
+        boids.push_back(boid);                                  // add the boid to the vector
     }
 
     // Declare your infinite update loop.
@@ -76,7 +80,7 @@ int main(int argc, char* argv[])
             boid.draw_Boid(ctx);
             boid.update_Boid_position(0.0001f);
             boid.separation(boids, protected_dist);
-            boid.alignment(boids, protected_dist, 0.1, 50.0f);
+            boid.alignment(boids, protected_dist, 0.1, 50.0f); //, &euclidian_dist);
             boid.cohesion(boids, protected_dist, 2.2f);
         }
     };

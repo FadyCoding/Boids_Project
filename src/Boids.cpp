@@ -120,7 +120,7 @@ void Boid::separation(std::vector<Boid>& boids_list, const float protected_dist)
     }
 }
 
-void Boid::alignment(std::vector<Boid>& neighbors_list, const float protected_dist, float modifier, const float max_speed)
+void Boid::alignment(std::vector<Boid>& neighbors_list, const float protected_dist, float modifier, const float max_speed)//, distance_func_ptr dist_func)
 {
     //Initialization of average speed variables
     float _xvel_avg, _yvel_avg;
@@ -141,6 +141,8 @@ void Boid::alignment(std::vector<Boid>& neighbors_list, const float protected_di
 
 
             //Calculates the position between this and boid who is neighbor
+           // double dist_euclid = dist_func(this->_position, neighbor._position);
+
             float dist_euclid = std::sqrt(std::pow(this->_position.x - neighbor._position.x, 2) + std::pow(this->_position.y - neighbor._position.y, 2));
 
             if (dist_euclid < protected_dist)
@@ -206,5 +208,25 @@ void Boid::cohesion(const std::vector<Boid>& neighbors_list, const float protect
         this->set_velocity(this->_velocity + cohesion_vector);
     }
 }
+
+void Boid::draw_Shark(p6::Context& ctx)
+{
+    ctx.stroke_weight = 0.005f;
+    ctx.use_stroke    = false;
+    ctx.use_fill      = true;
+
+    ctx.equilateral_triangle(
+        p6::Center{this->_position.x, this->_position.y},
+        p6::Radius{0.06f}
+    );
+
+}
+
+void Boid::obstacle(p6::Context& ctx)
+{
+
+
+}
+
 
 

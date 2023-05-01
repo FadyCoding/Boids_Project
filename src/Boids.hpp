@@ -9,7 +9,7 @@
 #include<glm/glm.hpp>
 #include<glm/gtx/string_cast.hpp>
 
-
+//typedef float(*distance_func_ptr)(glm::vec2, glm::vec2);
 
 class Boid 
 {
@@ -48,14 +48,25 @@ class Boid
 
         //draw method
         void draw_Boid(p6::Context& ctx);
+        void draw_Shark(p6::Context& ctx);
+        void obstacle(p6::Context& ctx);
+ 
 
         //update method
         void update_Boid_position(const float dTime);
         // Pass the boid and neighbors list with a reference so we don't copy everytime the list
         void separation(std::vector<Boid>& boids_list, const float protected_dist); 
-        void alignment(std::vector<Boid>& neighbors_list, const float protected_dist, const float modifier, const float max_speed); 
+        void alignment(std::vector<Boid>& neighbors_list, const float protected_dist, const float modifier, const float max_speed); //, distance_func_ptr dist_func); 
         void cohesion(const std::vector<Boid>& neighbors_list, const float protected_dist, const float centering);
+
+        
 };
+
+//Maths functions
+//float euclidian_dist(glm::vec2 pos1, glm::vec2 pos2)
+//{
+//    return std::sqrt(std::pow(pos1.x - pos2.x, 2) + std::pow(pos1.y - pos2.y, 2));
+//}
 
 
 #endif // !BOIDS_CLASS_H
