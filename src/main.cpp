@@ -1,13 +1,9 @@
-#include <cstdlib>
 #include "p6/p6.h"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
 #include "Boids.hpp"
+#include "Obstacle.hpp"
 
-//nota bene: ////////////////////////////////////////
-    //faire passer des methodes avec des references 
-    // name your boolean functions IfFunctionName
-/////////////////////////////////////////////////////
 
 int main(int argc, char* argv[])
 {
@@ -40,16 +36,25 @@ int main(int argc, char* argv[])
     glm::vec2 vel_min(-20.0f, -20.0f);
     glm::vec2 vel_max(20.0f, 20.0f);
 
-    //std::cout << "okokok" << std::endl;
+    
 
-    //Initialize boid vector
-    const int num_boids = 100;
+    //  Initialize boid vector
+    const int num_boids = 150;
 
-    //Initialize boid's ID
+    //  Initialize boid's ID
     int BoidID = 0;
 
-    //Protected distance 
+    //  Protected distance 
     float protected_dist = 0.1f;
+
+    //  Max speed
+    float max_speed = 50.0f;
+
+    //  Modifier
+    float modifier = 0.1f;
+
+    //  Centering 
+    float centering = 2.2f;
 
     //ptr function var
     //distance_func_ptr distance_func  = &euclidian_dist;
@@ -59,11 +64,16 @@ int main(int argc, char* argv[])
     for (int i = 0; i < num_boids; i++)
     {   
         BoidID = i;
-        boid.set_position(p6::random::point(pos_min, pos_max)); //sets a random position to each boid between a minimum and maximum
-        boid.set_velocity(p6::random::point(vel_min, vel_max)); //sets a random velocity to each boid between a minimum and maximum
-        boid.set_ID(BoidID);                                    // sets each boid's id 
-        boids.push_back(boid);                                  // add the boid to the vector
+        boid.set_position(p6::random::point(pos_min, pos_max)); //  sets a random position to each boid between a minimum and maximum
+        boid.set_velocity(p6::random::point(vel_min, vel_max)); //  sets a random velocity to each boid between a minimum and maximum
+        boid.set_ID(BoidID);                                    //  sets each boid's id 
+        boids.push_back(boid);                                  //  add the boid to the vector
     }
+
+    glm::vec2 sphere_pos(0.0f, 0.0f);
+    glm::vec2 sphere_vel(0.0f, 0.0f);
+    float     sphere_rad = 1.0f;
+    Obstacle* sphere = new Obstacle(sphere_pos, sphere_vel, sphere_rad);
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -72,18 +82,24 @@ int main(int argc, char* argv[])
         ctx.stroke_weight = 0.005f;
         ctx.use_stroke    = false;
         ctx.use_fill      = true;
+        
+        sphere->draw(ctx);
 
-
-        //no modification of boids and less costly to copy
-        for (auto& boid : boids)
+        
+     
+        
+        for (auto& boid : boids)                                        //no modification of boids and less costly to copy
         {
+            boid.avoid_object(sphere, 2.0f, max_speed, 1.0f);
             boid.draw_Boid(ctx);
             boid.update_Boid_position(0.0001f);
             boid.separation(boids, protected_dist);
-            boid.alignment(boids, protected_dist, 0.1, 50.0f); //, &euclidian_dist);
-            boid.cohesion(boids, protected_dist, 2.2f);
+            boid.alignment(boids, protected_dist, modifier, max_speed); //, &euclidian_dist);
+            boid.cohesion(boids, protected_dist, centering);
+            
         }
     };
+
 
     // Should be done last. It starts the infinite loop.
     ctx.start();

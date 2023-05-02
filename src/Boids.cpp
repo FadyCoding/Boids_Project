@@ -55,8 +55,6 @@ void Boid::set_position(glm::vec2 pos)
         }
     }
     
-
-   //this->_position = pos;
 }
 
 void Boid::set_velocity(glm::vec2 vel)
@@ -69,7 +67,7 @@ void Boid::set_ID(const int boidID)
     this->_id = boidID;
 }
 
-//Drawing
+//  Drawing
 void Boid::draw_Boid(p6::Context& ctx)
 {
 
@@ -84,7 +82,7 @@ void Boid::draw_Boid(p6::Context& ctx)
 
 }
 
-//Update methods
+//  Update methods
 void Boid::update_Boid_position(const float dTime)
 {
     set_position(this->_position + this->_velocity * dTime);   
@@ -193,7 +191,9 @@ void Boid::cohesion(const std::vector<Boid>& neighbors_list, const float protect
     // no modification of boids and less costly to copy
     for (const auto& neighbor : neighbors_list)
     {
-        const float distance = glm::distance(this->_position, neighbor._position);
+
+        const float distance = std::sqrt(std::pow(this->_position.x - neighbor._position.x, 2) + std::pow(this->_position.y - neighbor._position.y, 2));
+        //const float distance = glm::distance(this->_position, neighbor._position);
         if (distance > 0.0f && distance < protected_dist)
         {
             center_of_mass += neighbor._position;
@@ -215,17 +215,27 @@ void Boid::draw_Shark(p6::Context& ctx)
     ctx.use_stroke    = false;
     ctx.use_fill      = true;
 
-    ctx.equilateral_triangle(
-        p6::Center{this->_position.x, this->_position.y},
-        p6::Radius{0.06f}
+    ctx.circle(p6::Center{this->_position.x, this->_position.y}, 
+        p6::Radius{0.1f}
     );
 
 }
 
-void Boid::obstacle(p6::Context& ctx)
+//  Other behaviors
+void Boid::avoid_object(Obstacle* obst_ptr, float avoidance_distance, float max_speed, float avoidance_strength)
 {
-
-
+    glm::vec2 obst_position = obst_ptr->get_position();
+    float     distance = std::sqrt(pow(this->_position.x - obst_position.x, 2) + std::pow(this->_position.y - obst_position.y, 2));
+    if (distance < avoidance_distance)
+    {
+        glm::vec2 avoidance_direction = this->_position - obst_position;
+        glm::vec2 avoidance_force     = glm::normalize(avoidance_direction) * avoidance_strength * (avoidance_distance - distance) / avoidance_distance;
+        this->_velocity += avoidance_force;
+    }
+    if (glm::length(this->_velocity) > max_speed)
+    {
+        this->_velocity = glm::normalize(this->_velocity) * max_speed;
+    }
 }
 
 
