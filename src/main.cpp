@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     
 
     //  Initialize boid vector
-    const int num_boids = 150;
+    const int num_boids = 60;
 
     //  Initialize boid's ID
     int BoidID = 0;
@@ -73,7 +73,11 @@ int main(int argc, char* argv[])
     glm::vec2 sphere_pos(0.0f, 0.0f);
     glm::vec2 sphere_vel(0.0f, 0.0f);
     float     sphere_rad = 1.0f;
+    /*
+    //  Uncomment to have a obstacle
     Obstacle* sphere = new Obstacle(sphere_pos, sphere_vel, sphere_rad);
+
+    */ 
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -83,14 +87,15 @@ int main(int argc, char* argv[])
         ctx.use_stroke    = false;
         ctx.use_fill      = true;
         
-        sphere->draw(ctx);
+        //  Draw the sphere obstacle
+        //sphere->draw(ctx);
 
         
      
         
         for (auto& boid : boids)                                        //no modification of boids and less costly to copy
         {
-            boid.avoid_object(sphere, 2.0f, max_speed, 1.0f);
+           // boid.avoid_object(sphere, 2.0f, max_speed, 1.0f);
             boid.draw_Boid(ctx);
             boid.update_Boid_position(0.0001f);
             boid.separation(boids, protected_dist);

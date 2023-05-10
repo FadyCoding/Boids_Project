@@ -6,7 +6,7 @@ project(boids_project)
 
 # ---Declare source files---
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*)
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} "src/Boids.cpp")
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} "src/Boids.cpp" "src/Obstacle.cpp")
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 # ---Choose C++ version---
