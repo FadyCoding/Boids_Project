@@ -31,7 +31,7 @@ class Obstacle {
 
 
         // Methods
-        void draw(p6::Context& ctx);
+        void draw_sphere(p6::Context& ctx);
 
 };
 

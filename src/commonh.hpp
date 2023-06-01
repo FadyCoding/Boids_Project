@@ -3,3 +3,4 @@
 #include<cmath>
 #include <glm/glm.hpp>
 #include <vector>
+#include "IHM.hpp"

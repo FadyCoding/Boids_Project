@@ -21,10 +21,8 @@ std::size_t Boid::getID()
 
 void Boid::set_position(glm::vec2 pos)
 {
- 
     if (pos.x < -2.0f)
     {
-        
         this->_position.x = 2.0f - std::abs(pos.x + 2.0f);
     }
     else
@@ -54,48 +52,17 @@ void Boid::set_position(glm::vec2 pos)
             this->_position.y = pos.y;
         }
     }
-    
 }
 
 void Boid::set_velocity(glm::vec2 vel)
 {
-    //  Debug test
-    //std::cout << "here in set velocity" << std::endl;
-
-    if (this->_position.x <= -2.0f)
+    if (vel.x == 0.0f && vel.y == 0.0f)
     {
-        this->_velocity.x = vel.x + 2.2f; // this->_turnfactor;
+        this->_velocity = vel + 1.0f;
     }
     else
-    {
-        if (this->_position.x >= 2.0f)
-        {
-            this->_velocity.x = vel.x - 2.2f; // this->_turnfactor;
-        }
-        else
-        {
-            this->_velocity.x = vel.x;
-        }
-    }
-
-    if (this->_position.y >= 1.0f)
-    {
-        this->_velocity.y = vel.y - 2.2f; // this->_turnfactor;
-    }
-    else
-    {
-        if (this->_position.y <= -1.0f)
-        {
-            this->_velocity.y = vel.y + 2.2f; // this->_turnfactor;
-        }
-        else
-        {
-            this->_velocity.y = vel.y;
-        }
-    }
-    
-    //this->_velocity = vel;
-
+        this->_velocity = vel;
+       
 }
 
 

@@ -20,7 +20,7 @@ float Obstacle::get_radius()
 
 //  Methods
 
-void Obstacle::draw(p6::Context& ctx)
+void Obstacle::draw_sphere(p6::Context& ctx)
 {
     ctx.stroke_weight = 0.005f;
     ctx.use_stroke    = false;

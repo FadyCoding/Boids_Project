@@ -19,6 +19,8 @@ int main(int argc, char* argv[])
     // Actual app
     auto ctx = p6::Context{{.title = "boids_project"}};
     ctx.maximize_window();
+    //  Initialize of the GUI interface
+    IHM ihm;
 
     // Boid instanciation.
     Boid boid, boid_test;
@@ -39,7 +41,7 @@ int main(int argc, char* argv[])
     
 
     //  Initialize boid vector
-    const int num_boids = 60;
+    const int num_boids = 50;
 
     //  Initialize boid's ID
     int BoidID = 0;
@@ -88,9 +90,9 @@ int main(int argc, char* argv[])
         ctx.use_fill      = true;
         
         //  Draw the sphere obstacle
-        //sphere->draw(ctx);
+        //sphere->draw_sphere(ctx);
 
-        
+        ihm.draw();
      
         
         for (auto& boid : boids)                                        //no modification of boids and less costly to copy
@@ -99,7 +101,7 @@ int main(int argc, char* argv[])
             boid.draw_Boid(ctx);
             boid.update_Boid_position(0.0001f);
             boid.separation(boids, protected_dist);
-            boid.alignment(boids, protected_dist, modifier, max_speed); //, &euclidian_dist);
+            boid.alignment(boids, protected_dist, modifier, max_speed);
             boid.cohesion(boids, protected_dist, centering);
             
         }
